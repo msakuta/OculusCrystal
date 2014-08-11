@@ -267,17 +267,25 @@ Model* CreateModel(Vector3f pos, SlabModel* sm, const FillCollection& fills)
 // Adds sample models and lights to the argument scene.
 void PopulateRoomScene(Scene* scene, RenderDevice* render)
 {
-    FillCollection fills(render);  
+	FillCollection fills(render);
 
-    scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Room,       fills)));
-    scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Wall,       fills)));
-    scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Floor,      fills)));
-    scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Ceiling,    fills)));
-    scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Fixtures,   fills)));
-    scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Furniture,  fills)));
-    scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,4),  &Furniture,  fills)));
-    scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(-3,0,3), &Posts,      fills)));
-  
+	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 0), &Room, fills)));
+	//    scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Wall,       fills)));
+	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 0), &Floor, fills)));
+	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 0), &Ceiling, fills)));
+	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 0), &Fixtures, fills)));
+	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 0), &Furniture, fills)));
+	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 4), &Furniture, fills)));
+	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(-3, 0, 3), &Posts, fills)));
+
+	for (int i = 0; i < 4; i++)
+	{
+		Model *sphere = new Model(Prim_Triangles);
+		sphere->AddSphere(0.5f);
+		sphere->SetPosition(Vector3f(1 + i, i, 1 + i));
+		sphere->Fill = fills.LitTextures[Tex_Checker];
+		scene->World.Add(Ptr<Model>(*sphere));
+	}
 
     scene->SetAmbient(Vector4f(0.65f,0.65f,0.65f,1));
     scene->AddLight(Vector3f(-2,4,-2), Vector4f(8,8,8,1));
