@@ -81,6 +81,35 @@ Slab RoomSlabs[] =
 
 SlabModel Room = {sizeof(RoomSlabs)/sizeof(Slab), RoomSlabs, Tex_Block};
 
+const float doorWidth = 0.75f;
+const float doorHeight = 2.5f;
+const float ceilHeight = 4.f;
+const float wallThick = 0.05f;
+const float centerWallZ = -3.f;
+const float centerDoorZ = 5.f;
+
+static Slab WallSlabs[] =
+{
+	// Center wall
+	{ -5.f + doorWidth, 0.0f, centerWallZ - wallThick, 5.0f - 0.5f, ceilHeight, centerWallZ + wallThick, Color(128, 128, 128) },
+	// Left Wall
+	{ -10.0f, 0.0f, centerWallZ - wallThick, -5.0f - doorWidth, ceilHeight, centerWallZ + wallThick, Color(128, 128, 128) },
+	// Right Wall
+	{ 5.0f + 0.5f, 0.0f, centerWallZ - wallThick, 10.0f, ceilHeight, centerWallZ + wallThick, Color(128, 128, 128) },
+	// Left door top
+	{ -5.f - doorWidth, doorHeight, centerWallZ - wallThick, -5.0f + doorWidth, ceilHeight, centerWallZ + wallThick, Color(128, 128, 128) },
+	// Right door top
+	{ 5.f - doorWidth, doorHeight, centerWallZ - wallThick, 5.0f + doorWidth, ceilHeight, centerWallZ + wallThick, Color(128, 128, 128) },
+	// Front to Back Wall (near back)
+	{ -wallThick, 0.0f, centerWallZ, wallThick, ceilHeight, centerDoorZ - doorWidth, Color(128, 128, 128) },
+	// Front to Back Wall (near front)
+	{ -wallThick, 0.0f, centerDoorZ + doorWidth, wallThick, ceilHeight, 20.0f, Color(128, 128, 128) },
+	// Front to Back Wall (near front)
+	{ -wallThick, doorHeight, centerDoorZ - doorWidth, wallThick, ceilHeight, centerDoorZ + doorWidth, Color(128, 128, 128) },
+};
+
+static SlabModel Wall = { sizeof(WallSlabs) / sizeof(Slab), WallSlabs, Tex_Block };
+
 Slab FixtureSlabs[] =
 {
     // Right side shelf
@@ -241,6 +270,7 @@ void PopulateRoomScene(Scene* scene, RenderDevice* render)
     FillCollection fills(render);  
 
     scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Room,       fills)));
+    scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Wall,       fills)));
     scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Floor,      fills)));
     scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Ceiling,    fills)));
     scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Fixtures,   fills)));
