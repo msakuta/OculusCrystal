@@ -20,6 +20,7 @@ limitations under the License.
 *************************************************************************************/
 
 #include "RenderTiny_D3D11_Device.h"
+#include "OculusTest.h"
 #include "OVR_CAPI.h"
 
 // Win32 System Variables
@@ -76,7 +77,9 @@ void OnKey(unsigned vk, bool down)
     case VK_DOWN:   MoveBack    = down ? (MoveBack    | 2) : (MoveBack    & ~2);  break;
     
     case 'F':       FreezeEyeRender = !down ? !FreezeEyeRender : FreezeEyeRender; break;
-    
+
+	case 'T':       if(!down) ToggleStructure();                                  break;
+
     case VK_SHIFT:  ShiftDown = down;                                             break;
     case VK_CONTROL:ControlDown = down;                                           break;
     }

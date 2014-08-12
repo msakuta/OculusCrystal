@@ -36,12 +36,13 @@ limitations under the License.
 const bool       FullScreen = true; //Should be true for correct timing.  Use false for debug only.
 
 
+#include "OculusTest.h"
+
 // Include Non-SDK supporting Utilities from other files
 #include "RenderTiny_D3D11_Device.h"
 HWND Util_InitWindowAndGraphics    (Recti vp, int fullscreen, int multiSampleCount, bool UseAppWindowFrame, RenderDevice ** pDevice);
 void Util_ReleaseWindowAndGraphics (RenderDevice* pRender);
 bool Util_RespondToControls        (float & EyeYaw, Vector3f & EyePos, Quatf PoseOrientation);
-void PopulateRoomScene             (Scene* scene, RenderDevice* render);
 
 //Structures for the application
 ovrHmd             HMD;
@@ -224,6 +225,14 @@ int Init()
 	PopulateRoomScene(pRoomScene, pRender);
 
     return (0);
+}
+
+
+void ToggleStructure()
+{
+	static CrystalStructure structure = Cube;
+	structure = CrystalStructure((structure + 1) % Num_CrystalStructure);
+	PopulateRoomScene(pRoomScene, pRender, structure);
 }
 
 //-------------------------------------------------------------------------------------

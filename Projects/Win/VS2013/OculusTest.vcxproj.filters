@@ -27,5 +27,6 @@
     <ClInclude Include="..\..\..\HSWDisplay_Util.h">
       <Filter>Util</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\OculusTest.h" />
   </ItemGroup>
 </Project>
