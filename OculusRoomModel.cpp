@@ -281,35 +281,52 @@ void PopulateRoomScene(Scene* scene, RenderDevice* render, CrystalStructure stru
 //	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 4), &Furniture, fills)));
 //	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(-3, 0, 3), &Posts, fills)));
 
-	for (int ix = -4; ix < 4; ix++)
+	auto add = [&](float x, float y, float z){
+		Model *sphere = new Model(Prim_Triangles);
+		sphere->AddSphere(0.5f);
+		sphere->SetPosition(Vector3f(x, y, z));
+		sphere->Fill = fills.LitTextures[Tex_Checker];
+		scene->World.Add(Ptr<Model>(*sphere));
+	};
+
+	int cells = structure == Diamond ? 6 : 4;
+
+	for (int ix = -cells; ix < cells; ix++)
 	{
-		for (int iy = -4; iy < 4; iy++)
+		for (int iy = -cells; iy < cells; iy++)
 		{
-			for (int iz = -4; iz < 4; iz++)
+			for (int iz = -cells; iz < cells; iz++)
 			{
-				Model *sphere = new Model(Prim_Triangles);
-				sphere->AddSphere(0.5f);
 				switch (structure)
 				{
 				default:
 				case Cube:
-					sphere->SetPosition(Vector3f(ix, iy, iz));
+					add(ix, iy, iz);
 					break;
 				case FCC:
 					{
-						float xmod = (ix + 5 + iy + 5 + iz + 5) % 2 * sqrt(0.5f);
-						sphere->SetPosition(Vector3f(ix * sqrt(0.5f) + xmod, iy * sqrt(0.5f), iz * sqrt(0.5f)));
+						float xmod = (ix + cells + iy + cells + iz + cells) % 2 * sqrt(0.5f);
+						add(ix * sqrt(0.5f) + xmod, iy * sqrt(0.5f), iz * sqrt(0.5f));
 						break;
 					}
 				case BCC:
 					{
-						float ymod = (iy + 5) % 2 * 0.5f;
-						sphere->SetPosition(Vector3f(ix + ymod, float(iy * sqrt(1. / 2.)), iz + ymod));
+						float ymod = (iy + cells) % 2 * 0.5f;
+						add(ix + ymod, float(iy * sqrt(1. / 2.)), iz + ymod);
+						break;
+					}
+				case Diamond:
+					{
+						int xmod = (ix + cells) % 2;
+						int ymod = (iy + cells) % 2;
+						int zmod = (iz + cells) % 2;
+						int xyzmod = (ix + cells + iy + cells + iz + cells) % 4;
+						float fh = sqrt(1.f / 3.f);
+						if (xmod == ymod && ymod == zmod && (xyzmod == 0 || xyzmod == 1))
+							add(ix * fh, iy * fh, iz * fh);
 						break;
 					}
 				}
-				sphere->Fill = fills.LitTextures[Tex_Checker];
-				scene->World.Add(Ptr<Model>(*sphere));
 			}
 		}
 	}
