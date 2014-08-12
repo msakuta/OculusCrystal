@@ -6,8 +6,8 @@
 enum CrystalStructure
 {
 	Cube,
-//	FCC,
-	BCC,
+	FCC, // Face Centered Cubic
+	BCC, // Body Centered Cubic
 //	Diamond,
 	Num_CrystalStructure
 };

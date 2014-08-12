@@ -295,6 +295,12 @@ void PopulateRoomScene(Scene* scene, RenderDevice* render, CrystalStructure stru
 				case Cube:
 					sphere->SetPosition(Vector3f(ix, iy, iz));
 					break;
+				case FCC:
+					{
+						float xmod = (ix + 5 + iy + 5 + iz + 5) % 2 * sqrt(0.5f);
+						sphere->SetPosition(Vector3f(ix * sqrt(0.5f) + xmod, iy * sqrt(0.5f), iz * sqrt(0.5f)));
+						break;
+					}
 				case BCC:
 					{
 						float ymod = (iy + 5) % 2 * 0.5f;
