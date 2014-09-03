@@ -51,6 +51,7 @@ ovrRecti           EyeRenderViewport[2];
 RenderDevice*      pRender = 0;
 Texture*           pRendertargetTexture = 0;
 Scene*             pRoomScene = 0;
+SceneBuilder       sbuilder;
 
 // Specifics for whether the SDK or the APP is doing the distortion.
 #if SDK_RENDER
@@ -222,17 +223,21 @@ int Init()
 
     // This creates lights and models.
   	pRoomScene = new Scene;
-	PopulateRoomScene(pRoomScene, pRender);
+	sbuilder.PopulateRoomScene(pRoomScene, pRender);
 
     return (0);
 }
 
-
-void ToggleStructure()
+void SceneBuilder::ToggleStructure()
 {
-	static CrystalStructure structure = Cube;
 	structure = CrystalStructure((structure + 1) % Num_CrystalStructure);
-	PopulateRoomScene(pRoomScene, pRender, structure);
+	PopulateRoomScene(pRoomScene, pRender);
+}
+
+void SceneBuilder::ResizeAtom(double relscale)
+{
+	scale = min(1, scale * relscale);
+	PopulateRoomScene(pRoomScene, pRender);
 }
 
 //-------------------------------------------------------------------------------------

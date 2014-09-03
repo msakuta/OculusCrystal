@@ -78,7 +78,9 @@ void OnKey(unsigned vk, bool down)
     
     case 'F':       FreezeEyeRender = !down ? !FreezeEyeRender : FreezeEyeRender; break;
 
-	case 'T':       if(!down) ToggleStructure();                                  break;
+	case 'T':       if(!down) sbuilder.ToggleStructure();                         break;
+	case 'Y':       if(!down) sbuilder.ResizeAtom(1.1);                           break;
+	case 'H':       if(!down) sbuilder.ResizeAtom(1. / 1.1); /* Reciprocal */     break;
 
     case VK_SHIFT:  ShiftDown = down;                                             break;
     case VK_CONTROL:ControlDown = down;                                           break;

@@ -12,7 +12,17 @@ enum CrystalStructure
 	Num_CrystalStructure
 };
 
-void PopulateRoomScene(Scene* scene, RenderDevice* render, CrystalStructure structure = Cube);
-void ToggleStructure();
+/// Parameters to PopulateRoomScene()
+struct SceneBuilder{
+	CrystalStructure structure;
+	double scale;
+	SceneBuilder() : structure(Cube), scale(1.){}
+
+	void ToggleStructure();
+	void ResizeAtom(double d);
+	void PopulateRoomScene(Scene* scene, RenderDevice* render);
+};
+
+extern SceneBuilder sbuilder;
 
 #endif

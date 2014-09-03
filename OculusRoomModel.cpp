@@ -266,7 +266,7 @@ Model* CreateModel(Vector3f pos, SlabModel* sm, const FillCollection& fills)
 
 
 // Adds sample models and lights to the argument scene.
-void PopulateRoomScene(Scene* scene, RenderDevice* render, CrystalStructure structure)
+void SceneBuilder::PopulateRoomScene(Scene* scene, RenderDevice* render)
 {
 	FillCollection fills(render);
 
@@ -283,7 +283,7 @@ void PopulateRoomScene(Scene* scene, RenderDevice* render, CrystalStructure stru
 
 	auto add = [&](float x, float y, float z){
 		Model *sphere = new Model(Prim_Triangles);
-		sphere->AddSphere(0.5f);
+		sphere->AddSphere(float(0.5 * scale));
 		sphere->SetPosition(Vector3f(x, y, z));
 		sphere->Fill = fills.LitTextures[Tex_Checker];
 		scene->World.Add(Ptr<Model>(*sphere));
