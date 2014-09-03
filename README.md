@@ -18,6 +18,27 @@ to the resources in the SDK match those of OculusRoomTiny sample.
 ![Screenshot](media/screenshot002.jpg)
 
 
+Controls
+--------
+
+In addition to standard WASD move keys, there are short cut keys available
+while looking around with Oculus Rift.
+
+* 'Z' - Move up
+
+* 'X' - Move down
+
+* 'T' - Switches between crystal structures in following set
+	* Simple Cubic (e.g. NaCl)
+	* Face Centered Cubic
+	* Body Centered Cubic
+	* Diamond Lattice
+
+* 'Y' - Increase radius of rendered sphere for atoms
+
+* 'H' - Decrease radius of rendered sphere for atoms
+
+
 Build
 -----
 
