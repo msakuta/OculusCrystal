@@ -10,7 +10,10 @@ Overview
 This project is forked from OculusRoomTiny sample in Oculus SDK 0.4.0.
 It does not include all the files in the SDK.
 Place the working tree under Samples directory of the SDK so the references
-to the resources in the SDK isS the same as OculuRoomTiny sample.
+to the resources in the SDK match those of OculusRoomTiny sample.
+
+
+![Screenshot](media/screenshot001.jpg)
 
 
 Build
