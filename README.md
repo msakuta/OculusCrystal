@@ -15,6 +15,8 @@ to the resources in the SDK match those of OculusRoomTiny sample.
 
 ![Screenshot](media/screenshot001.jpg)
 
+![Screenshot](media/screenshot002.jpg)
+
 
 Build
 -----
