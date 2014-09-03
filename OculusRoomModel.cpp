@@ -23,12 +23,6 @@ limitations under the License.
 #include "OculusTest.h"
 #include "RenderTiny_D3D11_Device.h"
 
-//-------------------------------------------------------------------------------------
-// ***** Room Model
-
-// This model is hard-coded out of axis-aligned solid-colored slabs.
-// Room unit dimensions are in meters. Player starts in the middle.
-//
 
 enum BuiltinTexture
 {
@@ -38,148 +32,6 @@ enum BuiltinTexture
     Tex_Panel,
     Tex_Count
 };
-
-struct Slab
-{
-    float x1, y1, z1;
-    float x2, y2, z2;
-    Color c;
-};
-
-struct SlabModel
-{
-    int   Count;
-    Slab* pSlabs;
-    BuiltinTexture tex;
-};
-
-Slab FloorSlabs[] =
-{
-    // Floor
-    { -10.0f,  -0.1f,  -20.0f,  10.0f,  0.0f, 20.1f,  Color(128,128,128) }
-};
-
-SlabModel Floor = {sizeof(FloorSlabs)/sizeof(Slab), FloorSlabs, Tex_Checker};
-
-
-Slab CeilingSlabs[] =
-{
-    { -10.0f,  4.0f,  -20.0f,  10.0f,  4.1f, 20.1f,  Color(128,128,128) }
-};
-
-SlabModel Ceiling = {sizeof(FloorSlabs)/sizeof(Slab), CeilingSlabs, Tex_Panel};
-
-Slab RoomSlabs[] =
-{
-    // Left Wall
-    { -10.1f,   0.0f,  -20.0f, -10.0f,  4.0f, 20.0f,  Color(128,128,128) },
-    // Back Wall
-    { -10.0f,  -0.1f,  -20.1f,  10.0f,  4.0f, -20.0f, Color(128,128,128) },
-
-    // Right Wall
-    {  10.0f,  -0.1f,  -20.0f,  10.1f,  4.0f, 20.0f,  Color(128,128,128) },
-};
-
-SlabModel Room = {sizeof(RoomSlabs)/sizeof(Slab), RoomSlabs, Tex_Block};
-
-const float doorWidth = 0.75f;
-const float doorHeight = 2.5f;
-const float ceilHeight = 4.f;
-const float wallThick = 0.05f;
-const float centerWallZ = -3.f;
-const float centerDoorZ = 5.f;
-
-static Slab WallSlabs[] =
-{
-	// Center wall
-	{ -5.f + doorWidth, 0.0f, centerWallZ - wallThick, 5.0f - 0.5f, ceilHeight, centerWallZ + wallThick, Color(128, 128, 128) },
-	// Left Wall
-	{ -10.0f, 0.0f, centerWallZ - wallThick, -5.0f - doorWidth, ceilHeight, centerWallZ + wallThick, Color(128, 128, 128) },
-	// Right Wall
-	{ 5.0f + 0.5f, 0.0f, centerWallZ - wallThick, 10.0f, ceilHeight, centerWallZ + wallThick, Color(128, 128, 128) },
-	// Left door top
-	{ -5.f - doorWidth, doorHeight, centerWallZ - wallThick, -5.0f + doorWidth, ceilHeight, centerWallZ + wallThick, Color(128, 128, 128) },
-	// Right door top
-	{ 5.f - doorWidth, doorHeight, centerWallZ - wallThick, 5.0f + doorWidth, ceilHeight, centerWallZ + wallThick, Color(128, 128, 128) },
-	// Front to Back Wall (near back)
-	{ -wallThick, 0.0f, centerWallZ, wallThick, ceilHeight, centerDoorZ - doorWidth, Color(128, 128, 128) },
-	// Front to Back Wall (near front)
-	{ -wallThick, 0.0f, centerDoorZ + doorWidth, wallThick, ceilHeight, 20.0f, Color(128, 128, 128) },
-	// Front to Back Wall (near front)
-	{ -wallThick, doorHeight, centerDoorZ - doorWidth, wallThick, ceilHeight, centerDoorZ + doorWidth, Color(128, 128, 128) },
-};
-
-static SlabModel Wall = { sizeof(WallSlabs) / sizeof(Slab), WallSlabs, Tex_Block };
-
-Slab FixtureSlabs[] =
-{
-    // Right side shelf
-    {   9.5f,   0.75f,  3.0f,  10.1f,  2.5f,   3.1f,  Color(128,128,128) }, // Verticals
-    {   9.5f,   0.95f,  3.7f,  10.1f,  2.75f,  3.8f,  Color(128,128,128) },
-    {   9.5f,   1.20f,  2.5f,  10.1f,  1.30f,  3.8f,  Color(128,128,128) }, // Horizontals
-    {   9.5f,   2.00f,  3.0f,  10.1f,  2.10f,  4.2f,  Color(128,128,128) },
-
-    // Right railing    
-    {   5.0f,   1.1f,   20.0f,  10.0f,  1.2f,  20.1f, Color(128,128,128) },
-    // Bars
-    {   9.0f,   1.1f,   20.0f,   9.1f,  0.0f,  20.1f, Color(128,128,128) },
-    {   8.0f,   1.1f,   20.0f,   8.1f,  0.0f,  20.1f, Color(128,128,128) },
-    {   7.0f,   1.1f,   20.0f,   7.1f,  0.0f,  20.1f, Color(128,128,128) },
-    {   6.0f,   1.1f,   20.0f,   6.1f,  0.0f,  20.1f, Color(128,128,128) },
-    {   5.0f,   1.1f,   20.0f,   5.1f,  0.0f,  20.1f, Color(128,128,128) },
-
-    // Left railing    
-    {  -10.0f,   1.1f, 20.0f,   -5.0f,   1.2f, 20.1f, Color(128,128,128) },
-    // Bars
-    {  -9.0f,   1.1f,   20.0f,  -9.1f,  0.0f,  20.1f, Color(128,128,128) },
-    {  -8.0f,   1.1f,   20.0f,  -8.1f,  0.0f,  20.1f, Color(128,128,128) },
-    {  -7.0f,   1.1f,   20.0f,  -7.1f,  0.0f,  20.1f, Color(128,128,128) },
-    {  -6.0f,   1.1f,   20.0f,  -6.1f,  0.0f,  20.1f, Color(128,128,128) },
-    {  -5.0f,   1.1f,   20.0f,  -5.1f,  0.0f,  20.1f, Color(128,128,128) },
-
-    // Bottom Floor 2
-    { -15.0f,  -6.1f,   18.0f,  15.0f, -6.0f, 30.0f,  Color(128,128,128) },
-};
-
-SlabModel Fixtures = {sizeof(FixtureSlabs)/sizeof(Slab), FixtureSlabs};
-
-Slab FurnitureSlabs[] =
-{
-    // Table
-    {  -1.8f, 0.7f, 1.0f,  0.0f,      0.8f, 0.0f,      Color(128,128,88) },
-    {  -1.8f, 0.7f, 0.0f, -1.8f+0.1f, 0.0f, 0.0f+0.1f, Color(128,128,88) }, // Leg 1
-    {  -1.8f, 0.7f, 1.0f, -1.8f+0.1f, 0.0f, 1.0f-0.1f, Color(128,128,88) }, // Leg 2
-    {   0.0f, 0.7f, 1.0f,  0.0f-0.1f, 0.0f, 1.0f-0.1f, Color(128,128,88) }, // Leg 2
-    {   0.0f, 0.7f, 0.0f,  0.0f-0.1f, 0.0f, 0.0f+0.1f, Color(128,128,88) }, // Leg 2
-
-    // Chair
-    {  -1.4f, 0.5f, -1.1f, -0.8f,       0.55f, -0.5f,       Color(88,88,128) }, // Set
-    {  -1.4f, 1.0f, -1.1f, -1.4f+0.06f, 0.0f,  -1.1f+0.06f, Color(88,88,128) }, // Leg 1
-    {  -1.4f, 0.5f, -0.5f, -1.4f+0.06f, 0.0f,  -0.5f-0.06f, Color(88,88,128) }, // Leg 2
-    {  -0.8f, 0.5f, -0.5f, -0.8f-0.06f, 0.0f,  -0.5f-0.06f, Color(88,88,128) }, // Leg 2
-    {  -0.8f, 1.0f, -1.1f, -0.8f-0.06f, 0.0f,  -1.1f+0.06f, Color(88,88,128) }, // Leg 2
-    {  -1.4f, 0.97f,-1.05f,-0.8f,       0.92f, -1.10f,      Color(88,88,128) }, // Back high bar
-};
-
-SlabModel Furniture = {sizeof(FurnitureSlabs)/sizeof(Slab), FurnitureSlabs};
-
-Slab PostsSlabs[] = 
-{
-    // Posts
-    {  0,  0.0f, 0.0f,   0.1f, 1.3f, 0.1f, Color(128,128,128) },
-    {  0,  0.0f, 0.4f,   0.1f, 1.3f, 0.5f, Color(128,128,128) },
-    {  0,  0.0f, 0.8f,   0.1f, 1.3f, 0.9f, Color(128,128,128) },
-    {  0,  0.0f, 1.2f,   0.1f, 1.3f, 1.3f, Color(128,128,128) },
-    {  0,  0.0f, 1.6f,   0.1f, 1.3f, 1.7f, Color(128,128,128) },
-    {  0,  0.0f, 2.0f,   0.1f, 1.3f, 2.1f, Color(128,128,128) },
-    {  0,  0.0f, 2.4f,   0.1f, 1.3f, 2.5f, Color(128,128,128) },
-    {  0,  0.0f, 2.8f,   0.1f, 1.3f, 2.9f, Color(128,128,128) },
-    {  0,  0.0f, 3.2f,   0.1f, 1.3f, 3.3f, Color(128,128,128) },
-    {  0,  0.0f, 3.6f,   0.1f, 1.3f, 3.7f, Color(128,128,128) },
-};
-
-SlabModel Posts = {sizeof(PostsSlabs)/sizeof(Slab), PostsSlabs};
-
 
 // Temporary helper class used to initialize fills used by model. 
 class FillCollection
@@ -245,41 +97,14 @@ FillCollection::FillCollection(RenderDevice* render)
 
 
 
-// Helper function to create a model out of Slab arrays.
-Model* CreateModel(Vector3f pos, SlabModel* sm, const FillCollection& fills)
-{
-    Model* m = new Model(Prim_Triangles);
-    m->SetPosition(pos);
-
-    for(int i=0; i< sm->Count; i++)
-    {
-        Slab &s = sm->pSlabs[i];
-        m->AddSolidColorBox(s.x1, s.y1, s.z1, s.x2, s.y2, s.z2, s.c);
-    }
-
-    if (sm->tex > 0)
-        m->Fill = fills.LitTextures[sm->tex];
-    else
-        m->Fill = fills.LitSolid;
-    return m;
-}
 
 
-// Adds sample models and lights to the argument scene.
+// Adds atoms to form crystal system
 void SceneBuilder::PopulateRoomScene(Scene* scene, RenderDevice* render)
 {
 	FillCollection fills(render);
 
 	scene->World.Clear();
-
-//	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 0), &Room, fills)));
-//	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Wall,       fills)));
-//	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 0), &Floor, fills)));
-//	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 0), &Ceiling, fills)));
-//	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 0), &Fixtures, fills)));
-//	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 0), &Furniture, fills)));
-//	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0, 0, 4), &Furniture, fills)));
-//	scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(-3, 0, 3), &Posts, fills)));
 
 	auto add = [&](float x, float y, float z){
 		Model *sphere = new Model(Prim_Triangles);
@@ -337,50 +162,3 @@ void SceneBuilder::PopulateRoomScene(Scene* scene, RenderDevice* render)
     scene->AddLight(Vector3f(3,4,-3),  Vector4f(2,1,1,1));
     scene->AddLight(Vector3f(-4,3,25), Vector4f(3,6,3,1));
 }
-
-
-// Render a debug marker static in rift (special request for eye-tracking)
-void renderSphere(RenderDevice* render, Vector3f ViewAdjust, float metresLeft, float metresUp, float metresAway, float metresRadius,
-				unsigned char red,unsigned char green,unsigned char blue)
-{
-	//Get textures, if haven't already
-	static FillCollection * pfills;  
-	static bool firstTime = true;
-	if (firstTime)
-	{
-		firstTime=false;
-		pfills = new FillCollection(render);
-	}
-
-	//Create object
-	Scene*  scene = new Scene;
-	Slab CubeSlabs[] =
-	{
-	#if 0 //Simple cube
-		 { metresLeft-metresRadius,  metresUp-metresRadius, metresAway-metresRadius,
-		   metresLeft+metresRadius,  metresUp+metresRadius, metresAway+metresRadius,  Color(red,green,blue) }
-	#else //Blob
-		 { metresLeft-0.33f*metresRadius,  metresUp-metresRadius, metresAway-0.33f*metresRadius,
-		   metresLeft+0.33f*metresRadius,  metresUp+metresRadius, metresAway+0.33f*metresRadius,  Color(red,green,blue) },
-		 { metresLeft-metresRadius,  metresUp-0.33f*metresRadius, metresAway-0.33f*metresRadius,
-		   metresLeft+metresRadius,  metresUp+0.33f*metresRadius, metresAway+0.33f*metresRadius,  Color(red,green,blue) },
-		 { metresLeft-0.33f*metresRadius,  metresUp-0.33f*metresRadius, metresAway-metresRadius,
-		   metresLeft+0.33f*metresRadius,  metresUp+0.33f*metresRadius, metresAway+metresRadius,  Color(red,green,blue) },
-		 { metresLeft-0.71f*metresRadius,  metresUp-0.71f*metresRadius, metresAway-0.71f*metresRadius,
-		   metresLeft+0.71f*metresRadius,  metresUp+0.71f*metresRadius, metresAway+0.71f*metresRadius,  Color(red,green,blue) },
-
-	#endif
-
-	};
-	SlabModel Cube = {sizeof(CubeSlabs)/sizeof(Slab), CubeSlabs, Tex_None};
-    scene->World.Add(Ptr<Model>(*CreateModel(Vector3f(0,0,0),  &Cube,  *pfills)));
-    scene->SetAmbient(Vector4f(1.0f,1.0f,1.0f,1));
-
-	//Render object
-    Matrix4f view = Matrix4f::LookAtRH(Vector3f(0,0,0), Vector3f(0,0,0) + Vector3f(0,0,1), Vector3f(0,1,0)); 
-	scene->Render(render, Matrix4f::Translation(ViewAdjust) * view);
-
-	//Delete object
-	delete scene;
-}
-
