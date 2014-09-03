@@ -258,7 +258,7 @@ void ProcessAndRender()
 	// Adjust eye position and rotation from controls, maintaining y position from HMD.
 	static float    BodyYaw(3.141592f);
 	static Vector3f HeadPos(0.0f, 1.6f, -5.0f);
-	HeadPos.y = ovrHmd_GetFloat(HMD, OVR_KEY_EYE_HEIGHT, HeadPos.y);
+//	HeadPos.y = ovrHmd_GetFloat(HMD, OVR_KEY_EYE_HEIGHT, HeadPos.y);
 	bool freezeEyeRender = Util_RespondToControls(BodyYaw, HeadPos, eyeRenderPose[1].Orientation);
 
      pRender->BeginScene();

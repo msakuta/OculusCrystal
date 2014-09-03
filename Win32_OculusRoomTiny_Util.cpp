@@ -33,7 +33,9 @@ bool                Quit = 0;
 uint8_t             MoveForward = 0,
                     MoveBack = 0,
                     MoveLeft = 0,
-                    MoveRight = 0;
+                    MoveRight = 0,
+                    MoveUp = 0,
+                    MoveDown = 0;
 
 bool                ShiftDown = false,
                     ControlDown = false;
@@ -75,7 +77,10 @@ void OnKey(unsigned vk, bool down)
 
     case VK_UP:     MoveForward = down ? (MoveForward | 2) : (MoveForward & ~2);  break;
     case VK_DOWN:   MoveBack    = down ? (MoveBack    | 2) : (MoveBack    & ~2);  break;
-    
+
+	case 'Z':       MoveUp      = down ? (MoveUp      | 1) : (MoveUp      & ~1);  break;
+	case 'X':       MoveDown    = down ? (MoveDown    | 1) : (MoveDown    & ~1);  break;
+
     case 'F':       FreezeEyeRender = !down ? !FreezeEyeRender : FreezeEyeRender; break;
 
 	case 'T':       if(!down) sbuilder.ToggleStructure();                         break;
@@ -111,15 +116,19 @@ bool Util_RespondToControls(float & EyeYaw, Vector3f & EyePos, Quatf PoseOrienta
 	PoseOrientation.GetEulerAngles<Axis_Y, Axis_X, Axis_Z>(&HeadYaw,&tempHeadPitch, &tempHeadRoll);
 
 	//Move on Eye pos from controls
-    Vector3f localMoveVector(0,0,0);
-    Matrix4f yawRotate = Matrix4f::RotationY(EyeYaw + HeadYaw);
+	Vector3f localMoveVector(0,0,0);
+	Matrix4f yawRotate = Matrix4f::RotationY(EyeYaw + HeadYaw);
+	Matrix4f pitchRotate = Matrix4f::RotationX(tempHeadPitch);
+	Matrix4f productRotate = yawRotate * pitchRotate;
 
-	if (MoveForward) localMoveVector += Vector3f(0,0,-1); 
-    if (MoveBack)    localMoveVector += Vector3f(0,0,+1); 
-    if (MoveRight)   localMoveVector += Vector3f(1,0,0); 
-    if (MoveLeft)    localMoveVector += Vector3f(-1,0,0);
+	if (MoveForward) localMoveVector += Vector3f(0,0,-1);
+	if (MoveBack)    localMoveVector += Vector3f(0,0,+1);
+	if (MoveRight)   localMoveVector += Vector3f(1,0,0);
+	if (MoveLeft)    localMoveVector += Vector3f(-1,0,0);
+	if (MoveUp)      localMoveVector.y += 1;
+	if (MoveDown)    localMoveVector.y -= 1;
 
-	Vector3f    orientationVector = yawRotate.Transform(localMoveVector);
+	Vector3f    orientationVector = productRotate.Transform(localMoveVector);
 
 	const float deltaTime = 1.0f/60.0f;
     orientationVector *= MoveSpeed * deltaTime * (ShiftDown ? 3.0f : 1.0f);
