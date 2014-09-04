@@ -16,10 +16,15 @@ enum CrystalStructure
 struct SceneBuilder{
 	CrystalStructure structure;
 	double scale;
-	SceneBuilder() : structure(Cube), scale(1.){}
+	bool drawAtom;
+	bool drawBond;
+	SceneBuilder() : structure(Cube), scale(0.5),
+		drawAtom(true), drawBond(true){}
 
 	void ToggleStructure();
 	void ResizeAtom(double d);
+	void ToggleDrawAtom();
+	void ToggleDrawBond();
 	void PopulateRoomScene(Scene* scene, RenderDevice* render);
 };
 

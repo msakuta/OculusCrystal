@@ -582,7 +582,7 @@ void Model::AddSolidColorBox(float x1, float y1, float z1,
 void Model::AddSphere(float scale)
 {
 	const double M_PI = 3.14159265358979;
-	int slices = 20, stacks = 10;
+	int slices = 16, stacks = 8;
 
 	uint16_t startIndex = GetNextVertexIndex();
 
@@ -622,6 +622,39 @@ void Model::AddSphere(float scale)
 				get(s1, t1),
 				get(s, t1));
 		}
+	}
+}
+
+void Model::AddCylinder(float radius, float height)
+{
+	const double M_PI = 3.14159265358979;
+	int round = 6;
+
+	uint16_t startIndex = GetNextVertexIndex();
+
+	for(int i = 0; i <= round; i++)
+	{
+		double sangle = i * M_PI * 2. / round;
+		for (int t = -1; t <= 1; t += 2)
+		{
+			Vector3f v = Vector3f(cos(sangle) * radius, sin(sangle) * radius, t * height);
+			AddVertex(Vertex(v, Color(127, 0, 127, 255), float(i), float(t), Vector3f(cos(sangle), sin(sangle), 0)));
+		}
+	}
+
+	// Renumber indices
+	for (uint16_t s = 0; s < round; s++)
+	{
+		uint16_t s1 = s + 1;
+		auto get = [&](uint16_t s, uint16_t t){
+			return s * 2 + t + startIndex;
+		};
+		AddTriangle(get(s, 0),
+			get(s, 1),
+			get(s1, 0));
+		AddTriangle(get(s1, 0),
+			get(s, 1),
+			get(s1, 1));
 	}
 }
 

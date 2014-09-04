@@ -240,6 +240,16 @@ void SceneBuilder::ResizeAtom(double relscale)
 	PopulateRoomScene(pRoomScene, pRender);
 }
 
+void SceneBuilder::ToggleDrawAtom(){
+	drawAtom = !drawAtom;
+	PopulateRoomScene(pRoomScene, pRender);
+}
+
+void SceneBuilder::ToggleDrawBond(){
+	drawBond = !drawBond;
+	PopulateRoomScene(pRoomScene, pRender);
+}
+
 //-------------------------------------------------------------------------------------
 void ProcessAndRender()
 {

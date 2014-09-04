@@ -106,6 +106,49 @@ void SceneBuilder::PopulateRoomScene(Scene* scene, RenderDevice* render)
 
 	scene->World.Clear();
 
+	// Returns a quaternion representing rotation that transforms (0,0,1) vector
+	// so that it's parallel to the given vector.
+	auto direction = [](const Vector3f &dir){
+		static const double epsilon = 1e-5f;
+		double p;
+		Quatf ret;
+		if (dir.LengthSq() <= epsilon)
+			return Quatf(0, 0, 0, 1);
+		Vector3f dr = dir.Normalized();
+
+		/* half-angle formula of trigonometry replaces expensive tri-functions to square root */
+		ret.w = ::sqrt((dr[2] + 1) / 2) /*cos(acos(dr[2]) / 2.)*/;
+
+		if (1 - epsilon < ret.w){
+			ret.x = ret.y = ret.z = 0;
+		}
+		else if (ret.w < epsilon){
+			ret.x = ret.z = 0;
+			ret.y = 1;
+		}
+		else{
+			Vector3f v = Vector3f(0,0,1).Cross(dr);
+			p = sqrt(1 - ret.w * ret.w) / (v.Length());
+			ret.x = v[0] * p;
+			ret.y = v[1] * p;
+			ret.z = v[2] * p;
+		}
+		return ret;
+	};
+
+	// Creates a bond cylinder between the given points
+	auto addBond = [&](const Vector3f &p0, const Vector3f &p1){
+		Vector3f diff = p1 - p0;
+		Quatf dir = direction(diff);
+		Model *cyl = new Model(Prim_Triangles);
+		cyl->AddCylinder(0.05, diff.Length());
+		cyl->SetPosition((p0 + p1) * 0.5f);
+		cyl->SetOrientation(dir);
+		cyl->Fill = fills.LitTextures[Tex_Checker];
+		scene->World.Add(Ptr<Model>(*cyl));
+	};
+
+	// Add an atom at specified position in space
 	auto add = [&](float x, float y, float z){
 		Model *sphere = new Model(Prim_Triangles);
 		sphere->AddSphere(float(0.5 * scale));
@@ -114,7 +157,12 @@ void SceneBuilder::PopulateRoomScene(Scene* scene, RenderDevice* render)
 		scene->World.Add(Ptr<Model>(*sphere));
 	};
 
-	int cells = structure == Diamond ? 6 : 4;
+	// Add method in vector form
+	auto addv = [&](const Vector3f &v){
+		add(v.x, v.y, v.z);
+	};
+
+	int cells = structure == Diamond ? 6 : 3;
 
 	for (int ix = -cells; ix < cells; ix++)
 	{
@@ -126,18 +174,42 @@ void SceneBuilder::PopulateRoomScene(Scene* scene, RenderDevice* render)
 				{
 				default:
 				case Cube:
-					add(ix, iy, iz);
+					if(drawAtom)
+						add(ix, iy, iz);
+					if(drawBond){
+						if(-cells <= ix - 1)
+							addBond(Vector3f(ix - 1, iy, iz), Vector3f(ix, iy, iz));
+						if(-cells <= iy - 1)
+							addBond(Vector3f(ix, iy - 1, iz), Vector3f(ix, iy, iz));
+						if(-cells <= iz - 1)
+							addBond(Vector3f(ix, iy, iz - 1), Vector3f(ix, iy, iz));
+					}
 					break;
 				case FCC:
 					{
-						float xmod = (ix + cells + iy + cells + iz + cells) % 2 * sqrt(0.5f);
-						add(ix * sqrt(0.5f) + xmod, iy * sqrt(0.5f), iz * sqrt(0.5f));
+						auto positioner = [&](int ix, int iy, int iz){
+							float xmod = (ix + cells + iy + cells + iz + cells) % 2 * sqrt(0.5f);
+							return Vector3f(ix * sqrt(0.5f) + xmod, iy * sqrt(0.5f), iz * sqrt(0.5f));
+						};
+						if(drawAtom)
+							addv(positioner(ix, iy, iz));
+						if(drawBond){
+							if(-cells <= iy - 1)
+								addBond(positioner(ix, iy - 1, iz), positioner(ix, iy, iz));
+							if(-cells <= iz - 1)
+								addBond(positioner(ix, iy, iz - 1), positioner(ix, iy, iz));
+							if(-cells <= iz - 1 && -cells <= iy - 1)
+								addBond(positioner(ix, iy - 1, iz - 1), positioner(ix, iy, iz));
+							if (-cells <= iz - 1 && iy + 1 < cells)
+								addBond(positioner(ix, iy + 1, iz - 1), positioner(ix, iy, iz));
+						}
 						break;
 					}
 				case BCC:
 					{
 						float ymod = (iy + cells) % 2 * 0.5f;
-						add(ix + ymod, float(iy * sqrt(1. / 2.)), iz + ymod);
+						if(drawAtom)
+							add(ix + ymod, float(iy * sqrt(1. / 2.)), iz + ymod);
 						break;
 					}
 				case Diamond:
@@ -147,8 +219,10 @@ void SceneBuilder::PopulateRoomScene(Scene* scene, RenderDevice* render)
 						int zmod = (iz + cells) % 2;
 						int xyzmod = (ix + cells + iy + cells + iz + cells) % 4;
 						float fh = sqrt(1.f / 3.f);
-						if (xmod == ymod && ymod == zmod && (xyzmod == 0 || xyzmod == 1))
-							add(ix * fh, iy * fh, iz * fh);
+						if (drawAtom){
+							if (xmod == ymod && ymod == zmod && (xyzmod == 0 || xyzmod == 1))
+								add(ix * fh, iy * fh, iz * fh);
+						}
 						break;
 					}
 				}

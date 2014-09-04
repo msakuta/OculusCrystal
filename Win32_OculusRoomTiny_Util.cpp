@@ -86,6 +86,8 @@ void OnKey(unsigned vk, bool down)
 	case 'T':       if(!down) sbuilder.ToggleStructure();                         break;
 	case 'Y':       if(!down) sbuilder.ResizeAtom(1.1);                           break;
 	case 'H':       if(!down) sbuilder.ResizeAtom(1. / 1.1); /* Reciprocal */     break;
+	case 'V':       if(!down) sbuilder.ToggleDrawAtom();                          break;
+	case 'B':       if(!down) sbuilder.ToggleDrawBond();                          break;
 
     case VK_SHIFT:  ShiftDown = down;                                             break;
     case VK_CONTROL:ControlDown = down;                                           break;

@@ -554,6 +554,8 @@ public:
                            Color c);
 
 	void AddSphere(float scale = 1.0f);
+
+	void AddCylinder(float radius = 1.0f, float length = 1.0f);
 };
 
 
