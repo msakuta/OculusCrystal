@@ -17,6 +17,8 @@ to the resources in the SDK match those of OculusRoomTiny sample.
 
 ![Screenshot](media/screenshot002.jpg)
 
+![Screenshot](media/screenshot003.jpg)
+
 
 Controls
 --------
@@ -37,6 +39,10 @@ while looking around with Oculus Rift.
 * 'Y' - Increase radius of rendered sphere for atoms
 
 * 'H' - Decrease radius of rendered sphere for atoms
+
+* 'V' - Toggle rendering of atoms
+
+* 'B' - Toggle rendering of bonds between atoms
 
 
 Build
