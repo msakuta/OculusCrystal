@@ -13,11 +13,16 @@ Place the working tree under Samples directory of the SDK so the references
 to the resources in the SDK match those of OculusRoomTiny sample.
 
 
+Screenshots
+-----------
+
 ![Screenshot](media/screenshot001.jpg)
 
 ![Screenshot](media/screenshot002.jpg)
 
 ![Screenshot](media/screenshot003.jpg)
+
+![Screenshot](media/screenshot004.jpg)
 
 
 Controls
