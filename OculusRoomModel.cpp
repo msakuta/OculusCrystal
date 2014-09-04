@@ -141,7 +141,7 @@ void SceneBuilder::PopulateRoomScene(Scene* scene, RenderDevice* render)
 		Vector3f diff = p1 - p0;
 		Quatf dir = direction(diff);
 		Model *cyl = new Model(Prim_Triangles);
-		cyl->AddCylinder(0.05, diff.Length());
+		cyl->AddCylinder(0.05, diff.Length() * 0.5f);
 		cyl->SetPosition((p0 + p1) * 0.5f);
 		cyl->SetOrientation(dir);
 		cyl->Fill = fills.LitTextures[Tex_Checker];
@@ -207,9 +207,25 @@ void SceneBuilder::PopulateRoomScene(Scene* scene, RenderDevice* render)
 					}
 				case BCC:
 					{
-						float ymod = (iy + cells) % 2 * 0.5f;
+						auto bccPositioner = [&](int ix, int iy, int iz){
+							float ymod = (iy + cells) % 2 * 0.5f;
+							return Vector3f(ix + ymod, float(iy * sqrt(1. / 2.)), iz + ymod);
+						};
 						if(drawAtom)
-							add(ix + ymod, float(iy * sqrt(1. / 2.)), iz + ymod);
+							addv(bccPositioner(ix, iy, iz));
+						if (drawBond){
+							if (-cells <= iy - 1){
+								int ymod = (iy + cells) % 2;
+//								if (-cells <= ix + ymod - 1 && ix + ymod - 1 < cells)
+									addBond(bccPositioner(ix, iy - 1, iz), bccPositioner(ix, iy, iz));
+								if (-cells <= ix + ymod && ix + ymod < cells)
+									addBond(bccPositioner(ix + ymod, iy - 1, iz), bccPositioner(ix, iy, iz));
+								if (-cells <= iz + ymod && iz + ymod < cells)
+									addBond(bccPositioner(ix, iy - 1, iz + ymod), bccPositioner(ix, iy, iz));
+								if (-cells <= ix + ymod && ix + ymod < cells && -cells <= iz + ymod && iz + ymod < cells)
+									addBond(bccPositioner(ix + ymod, iy - 1, iz + ymod), bccPositioner(ix, iy, iz));
+							}
+						}
 						break;
 					}
 				case Diamond:
